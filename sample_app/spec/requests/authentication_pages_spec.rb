@@ -12,10 +12,10 @@ describe "Authentication" do
   end
 
   describe "signin" do
-    before { visit signin_path }
 
     describe "with invalid information" do
-      before { click_button "Sign in" }
+      let(:invalid_user) { nil }
+      before { sign_in invalid_user }
 
       it { should have_title('Sign in') }
       it { should have_error_message('Invalid') }
@@ -28,7 +28,7 @@ describe "Authentication" do
 
     describe "with valid information" do
       let(:user) { FactoryGirl.create(:user) }
-      before { valid_signin(user) }
+      before { sign_in user }
 
       it { should have_title(user.name) }
       it { should have_link('Users', href: users_path) }
@@ -40,6 +40,20 @@ describe "Authentication" do
       describe "followed by signout" do
         before { click_link "Sign out" }
         it { should have_link('Sign in') }
+      end
+
+      describe 'redirect to root' do
+        before { sign_in user, no_capybara: true}
+
+        describe "visiting the signup page" do
+          before { get signup_path }
+          specify { expect(response).to redirect_to(root_path) }
+        end
+
+        describe 'submitting a PUT request to the Users#create action' do
+          before { post users_path }
+          specify { expect(response).to redirect_to(root_path) }
+        end
       end
     end
   end
@@ -54,6 +68,9 @@ describe "Authentication" do
         describe 'visiting the edit page' do
           before { visit edit_user_path(user) }
           it { should have_title('Sign in') }
+          it { should_not have_link('Profile') }
+          it { should_not have_link('Settings') }
+          it { should_not have_link('Sign out') }
         end
 
         describe 'submitting to the update action' do
@@ -64,6 +81,9 @@ describe "Authentication" do
         describe 'visiting the user index' do
           before { visit users_path }
           it { should have_title('Sign in') }
+          it { should_not have_link('Profile') }
+          it { should_not have_link('Settings') }
+          it { should_not have_link('Sign out') }
         end
       end
 
@@ -79,6 +99,17 @@ describe "Authentication" do
 
           it 'should render the desired protedted page' do
             expect(page).to have_title('Edit user')
+          end
+
+          describe 'when signing in again' do
+            before do
+              delete signout_path
+              sign_in user
+            end
+
+            it 'should render the default (profile) page' do
+              expect(page).to have_title(user.name)
+            end
           end
         end
       end
@@ -110,6 +141,16 @@ describe "Authentication" do
       describe 'submitting a DELETE request to the Users#destroy action' do
         before { delete user_path(user) }
         specify { expect(response).to redirect_to(root_path) }
+      end
+    end
+
+    describe 'as an admin user' do
+      let(:admin) { FactoryGirl.create(:admin) }
+      before { sign_in admin, no_capybara: true }
+
+      describe 'submitting a DELETE request to themself' do
+        before { delete user_path(admin) }
+        specify { expect(User.find(admin.id)).not_to be_nil }
       end
     end
   end
