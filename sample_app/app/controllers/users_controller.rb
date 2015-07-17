@@ -57,12 +57,6 @@ class UsersController < ApplicationController
 
   # Before actions
 
-  def signed_in_user
-    return if signed_in?
-    store_location
-    redirect_to(signin_url, notice: 'Please sign in.')
-  end
-
   def non_signed_in_user
     redirect_to(root_path, notice: 'You are already signed in.') if signed_in?
   end
