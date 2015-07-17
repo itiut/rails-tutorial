@@ -150,7 +150,7 @@ describe "Authentication" do
 
       describe 'submitting a DELETE request to themself' do
         before { delete user_path(admin) }
-        specify { expect(User.find(admin.id)).not_to be_nil }
+        specify { expect(User.where(id: admin.id)).not_to be_empty }
       end
     end
   end
