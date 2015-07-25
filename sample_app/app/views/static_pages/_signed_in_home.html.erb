@@ -11,7 +11,11 @@
     </section>
   </aside>
   <div class="span8">
-    <h3>Micropost Feed</h3>
-    <%= render partial: 'shared/feed', locals: { feed_items: feed_items } %>
+    <%= render partial: 'shared/list', locals: {
+      head: 'Micropost Feed',
+      items: feed_items,
+      item_class: 'micropost',
+      uid: current_user.id
+    } %>
   </div>
 </div>

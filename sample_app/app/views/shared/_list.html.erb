@@ -1,0 +1,9 @@
+<%= content_tag(local_assigns.fetch(:head_tag, :h3), head) %>
+<% if items.any? %>
+  <ol class="<%= item_class.pluralize %>">
+    <%= render partial: "shared/#{item_class}", collection: items, locals: {
+      uid: local_assigns.fetch(:uid, nil)
+    } %>
+  </ol>
+  <%= will_paginate items %>
+<% end %>

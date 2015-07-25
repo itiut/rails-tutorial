@@ -16,12 +16,11 @@
     </section>
   </aside>
   <div class="span8">
-    <h3><%= @title %></h3>
-    <% if @users.any? %>
-      <ul class="users">
-        <%= render @users %>
-      </ul>
-      <%= will_paginate %>
-    <% end %>
+    <%= render partial: 'shared/list', locals: {
+      head: @title,
+      items: @users,
+      item_class: 'user',
+      uid: @user.id
+    } %>
   </div>
 </div>

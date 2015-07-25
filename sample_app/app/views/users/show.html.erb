@@ -10,12 +10,11 @@
   </aside>
   <div class="span8">
     <%= render 'follow_form' if signed_in? %>
-    <% if @user.microposts.any? %>
-      <h3>Microposts (<%= @user.microposts.count %>)</h3>
-      <ol class="microposts">
-        <%= render @microposts %>
-      </ol>
-      <%= will_paginate @microposts %>
-    <% end %>
+    <%= render partial: 'shared/list', locals: {
+      head: "Microposts (#{@user.microposts.count})",
+      items: @microposts,
+      item_class: 'micropost',
+      uid: @user.id
+    } %>
   </div>
 </div>
